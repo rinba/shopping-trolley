@@ -5,9 +5,9 @@
 			<input type="checkbox" v-model="isAll"/>
 		</label>
 		<span>
-			<span>已完成{{doneTotal}}</span> / 全部{{total}}
+			<span>已选择{{doneTotal}}</span> / 全部{{total}}
 		</span>
-		<button class="btn btn-danger" @click="clearAll">清除已完成任务</button>
+		<button class="btn btn-danger" @click="clearAll">全部删除</button>
 	</div>
 </template>
 
