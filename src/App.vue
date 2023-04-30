@@ -29,10 +29,13 @@
 			}
 		},
 		methods: {
+			//MyHeader.vue中的方法
 			//添加一个todo
 			addTodo(todoObj){
 				this.todos.unshift(todoObj)
 			},
+
+			//MyItem.vue中的方法
 			//勾选or取消勾选一个todo
 			checkTodo(id){
 				this.todos.forEach((todo)=>{
@@ -43,6 +46,8 @@
 			deleteTodo(id){
 				this.todos = this.todos.filter( todo => todo.id !== id )
 			},
+
+			//MyFooter.vue中的方法
 			//全选or取消全选
 			checkAllTodo(done){
 				this.todos.forEach((todo)=>{
