@@ -39,7 +39,7 @@
 					if(todo.id === id) todo.done = !todo.done
 				})
 			},
-			//删除一个todo
+			//删除一个todo（用过滤的思想去写 删除）
 			deleteTodo(id){
 				this.todos = this.todos.filter( todo => todo.id !== id )
 			},
