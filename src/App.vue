@@ -2,15 +2,16 @@
 	<div id="root">
 		<div class="todo-container">
 			<div class="todo-wrap">
-				<MyHeader :addTodo="addTodo"/>
-				<MyList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo"/>
-				<MyFooter :todos="todos" :checkAllTodo="checkAllTodo" :clearAllTodo="clearAllTodo"/>
+				<MyHeader @addTodo="addTodo"/>
+				<MyList :todos="todos"/>
+				<MyFooter :todos="todos" @checkAllTodo="checkAllTodo" @clearAllTodo="clearAllTodo"/>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+	import pubsub from 'pubsub-js'
 	import MyHeader from './components/MyHeader'
 	import MyList from './components/MyList'
 	import MyFooter from './components/MyFooter'
@@ -20,34 +21,34 @@
 		components:{MyHeader,MyList,MyFooter},
 		data() {
 			return {
+				//浏览器本地存储
 				//由于todos是MyHeader组件和MyFooter组件都在使用，所以放在App中（状态提升）
-				todos:[
-					{id:'001',title:'4090显卡',done:true},
-					{id:'002',title:'耐克篮球鞋',done:false},
-					{id:'003',title:'小米蓝牙耳机',done:true}
-				]
+				todos:JSON.parse(localStorage.getItem('todos')) || []
 			}
 		},
 		methods: {
-			//MyHeader.vue中的方法
 			//添加一个todo
 			addTodo(todoObj){
 				this.todos.unshift(todoObj)
 			},
 
-			//MyItem.vue中的方法
 			//勾选or取消勾选一个todo
 			checkTodo(id){
 				this.todos.forEach((todo)=>{
 					if(todo.id === id) todo.done = !todo.done
 				})
 			},
-			//删除一个todo（用过滤的思想去写 删除）
-			deleteTodo(id){
+			//更新一个todo
+			updateTodo(id,title){
+				this.todos.forEach((todo)=>{
+					if(todo.id === id) todo.title = title
+				})
+			},
+			//删除一个todo
+			deleteTodo(_,id){
 				this.todos = this.todos.filter( todo => todo.id !== id )
 			},
 
-			//MyFooter.vue中的方法
 			//全选or取消全选
 			checkAllTodo(done){
 				this.todos.forEach((todo)=>{
@@ -60,7 +61,25 @@
 					return !todo.done
 				})
 			}
-		}
+		},
+		watch: {
+			todos:{
+				deep:true,
+				handler(value){
+					localStorage.setItem('todos',JSON.stringify(value))
+				}
+			}
+		},
+		mounted() {
+			this.$bus.$on('checkTodo',this.checkTodo)
+			this.$bus.$on('updateTodo',this.updateTodo)
+			this.pubId = pubsub.subscribe('deleteTodo',this.deleteTodo)
+		},
+		beforeDestroy() {
+			this.$bus.$off('checkTodo')
+			this.$bus.$off('updateTodo')
+			pubsub.unsubscribe(this.pubId)
+		},
 	}
 </script>
 
@@ -85,6 +104,12 @@
 		color: #fff;
 		background-color: #da4f49;
 		border: 1px solid #bd362f;
+	}
+	.btn-edit {
+		color: #fff;
+		background-color: skyblue;
+		border: 1px solid rgb(103, 159, 180);
+		margin-right: 5px;
 	}
 	.btn-danger:hover {
 		color: #fff;

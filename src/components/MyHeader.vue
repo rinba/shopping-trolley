@@ -8,8 +8,6 @@
 	import {nanoid} from 'nanoid'
 	export default {
 		name:'MyHeader',
-		//接收从App传递过来的addTodo
-		props:['addTodo'],
 		data() {
 			return {
 				//收集用户输入的title
@@ -23,7 +21,7 @@
 				//将用户的输入包装成一个todo对象
 				const todoObj = {id:nanoid(),title:this.title,done:false}
 				//通知App组件去添加一个todo对象
-				this.addTodo(todoObj)
+				this.$emit('addTodo',todoObj,1,2,3)
 				//清空输入
 				this.title = ''
 			}
